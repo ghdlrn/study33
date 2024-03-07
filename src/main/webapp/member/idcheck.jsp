@@ -6,6 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script type="text/javascript" src="script/member.js"></script>
 </head>
 <body>
 	<h2>아이디 중복 체크</h2>

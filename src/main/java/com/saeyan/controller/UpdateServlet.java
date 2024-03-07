@@ -2,7 +2,6 @@ package com.saeyan.controller;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,13 +12,23 @@ import javax.servlet.http.HttpSession;
 import com.saeyan.dto.MemberDAO;
 import com.saeyan.dto.MemberVO;
 
-@WebServlet("/join.do")
-public class joinServlet extends HttpServlet {
+@WebServlet("/memberUpdate.do")
+public class UpdateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher dis = request.getRequestDispatcher("member/join.jsp");
-		dis.forward(request, response);
+		String userid = request.getParameter("userid");
+		
+		MemberDAO mDao = MemberDAO.getInstance();
+		MemberVO vo = mDao.getMember(userid);
+		
+		HttpSession session = request.getSession();
+		if(session != null) {
+			session.setAttribute("mVo", vo);
+		}
+		
+		request.getRequestDispatcher("member/memberUpdate.jsp").forward(request, response);
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -41,18 +50,11 @@ public class joinServlet extends HttpServlet {
 		vo.setAdmin(Integer.parseInt(admin));
 		
 		MemberDAO mDao = MemberDAO.getInstance();
-		int result = mDao.insertMember(vo);
+		int result = mDao.updateMember(vo);
 		
 		HttpSession session = request.getSession();
-		
-		if (result == 1 ) {	//회원가입 성공
-			session.setAttribute("userid", vo.getUserid());
-			request.setAttribute("message", "회원가입에 성공했습니다.");
-		} else {	//회원가입 실패
-			request.setAttribute("message", "회원가입에 실패했습니다.");
-		}
-		request.getRequestDispatcher("member/login.jsp")
-				.forward(request, response);
+		request.setAttribute("message", "회원 정보 수정완료");
+		response.sendRedirect("member/login.jsp");
 	}
 
 }
